@@ -205,25 +205,288 @@ scan.h5
 
 ## Physics Implementation
 
-### Wave Propagation
-- **Fresnel diffraction** using angular spectrum method
-- **Multi-slice propagation** through 3D volumes
-- **Complex wavefront** tracking (amplitude + phase)
+### Wave Propagation Theory
 
-### X-ray Interactions
-- **Phase contrast**: Refractive index from XRayLib
-- **Absorption**: Mass attenuation coefficients
-- **Coherent scattering**: Klein-Nishina + Thomson cross sections
+MSim implements coherent X-ray wave propagation using the **Fresnel diffraction** formalism with the **angular spectrum method**.
 
-### Detector Response
-- **Photon counting statistics** (Poisson noise)
-- **Quantum efficiency** and electronic noise
-- **Realistic detector parameters**
+#### Fresnel Propagation
 
-### Dose Calculation
-- **Beam attenuation** through materials
-- **Energy absorption coefficients** from XRayLib
-- **Material-specific dose maps** in Gray
+The wavefront propagation between planes separated by distance `z` is given by:
+
+```
+ψ(x,y,z) = F⁻¹[F[ψ(x,y,0)] · H(kₓ,kᵧ,z)]
+```
+
+where the **Fresnel propagator** is:
+
+```
+H(kₓ,kᵧ,z) = exp(-i(kₓ² + kᵧ²)z / 2k₀)
+```
+
+with:
+- `k₀ = 2π/λ` = wavenumber in vacuum
+- `λ = hc/E` = X-ray wavelength
+- `kₓ, kᵧ` = spatial frequencies
+- `F, F⁻¹` = Fourier transform operators
+
+#### Multi-slice Method
+
+The 3D volume is propagated slice-by-slice with thickness `Δz`:
+
+```
+ψₙ₊₁ = F⁻¹[F[ψₙ · T(x,y)] · H(kₓ,kᵧ,Δz)]
+```
+
+where `T(x,y)` is the **transmission function** for slice `n`.
+
+### X-ray Matter Interaction
+
+#### Complex Refractive Index
+
+The X-ray refractive index for materials is:
+
+```
+n = 1 - δ - iβ
+```
+
+where:
+- `δ` = real part (phase shift)
+- `β` = imaginary part (absorption)
+
+From XRayLib, these are calculated as:
+```
+δ = 1 - Re[n(E,ρ)]
+β = Im[n(E,ρ)]
+```
+
+#### Transmission Function
+
+The transmission through a material slice of thickness `Δz` is:
+
+```
+T(x,y) = exp(ik₀δ(x,y)Δz) · exp(-μₐᵦₛ(x,y)Δz/2)
+```
+
+where:
+- **Phase term**: `exp(ik₀δΔz)` causes phase advance
+- **Absorption term**: `exp(-μₐᵦₛΔz/2)` attenuates amplitude
+
+#### Linear Attenuation Coefficients
+
+From XRayLib cross-sections:
+
+```
+μₐᵦₛ = ρ(σₜₒₜₐₗ - σᵣₐᵧₗₑᵢgₕ) × 100
+μₛcₐₜ = ρ × σᵣₐᵧₗₑᵢgₕ × 100
+```
+
+where:
+- `ρ` = material density (g/cm³)
+- `σₜₒₜₐₗ` = total cross-section (cm²/g)
+- `σᵣₐᵧₗₑᵢgₕ` = Rayleigh scattering cross-section (cm²/g)
+- Factor of 100 converts to cm⁻¹
+
+### Coherent Scattering Model
+
+#### Klein-Nishina + Thomson Scattering
+
+The differential scattering cross-section combines:
+
+**Thomson scattering:**
+```
+dσᵧ/dΩ = rₑ²(1 + cos²θ)/2
+```
+
+**Klein-Nishina correction:**
+```
+dσₖₙ/dΩ = (rₑ²/2) × (1 + cos²θ)/[1 + α(1-cosθ)]² × [1 + α(1-cosθ) - α²(1-cosθ)²/((1+cos²θ)(1+α(1-cosθ)))]
+```
+
+where:
+- `rₑ = 2.818 × 10⁻¹⁵ m` = classical electron radius
+- `α = E/(mₑc²) = E/511` keV = photon energy ratio
+- `θ` = scattering angle
+
+#### Point Spread Function
+
+The 2D scattering PSF is:
+
+```
+PSF(r) = ∫ (dσ/dΩ)(θ) × 2πsinθ dθ
+```
+
+projected onto the detector plane:
+```
+r = θ × D / pᵢₓₑₗ
+```
+
+where `D` = detector distance, `pᵢₓₑₗ` = pixel size.
+
+#### Scattering Implementation
+
+For each slice, the intensity is split:
+```
+Iᵤₙₛcₐₜₜₑᵣₑ𝒹 = I × exp(-μₛcₐₜ × Δz)
+Iₛcₐₜₜₑᵣₑ𝒹 = I × [1 - exp(-μₛcₐₜ × Δz)]
+```
+
+The scattered intensity is convolved with the PSF:
+```
+Iᵦₗᵤᵣᵣₑ𝒹 = Iₛcₐₜₜₑᵣₑ𝒹 ⊗ PSF
+```
+
+Total intensity: `Iₜₒₜₐₗ = Iᵤₙₛcₐₜₜₑᵣₑ𝒹 + Iᵦₗᵤᵣᵣₑ𝒹`
+
+Wavefront reconstruction:
+```
+ψₙₑ𝓌 = √Iₜₒₜₐₗ × exp(i∠ψₒₗ𝒹)
+```
+
+### Detector Response Model
+
+#### Photon Statistics
+
+**Incident photon flux:**
+```
+Φᵢₙc = Iₙₒᵣₘₐₗᵢᵤₑ𝒹 × N₀
+```
+
+where `N₀` = incident photons per pixel.
+
+**Detected photons:**
+```
+Nᵈᵉᵗ = Poisson(Φᵢₙc × ηᵈᵉᵗ)
+```
+
+where `ηᵈᵉᵗ` = detector quantum efficiency.
+
+**Noise sources:**
+```
+Nₜₒₜₐₗ = Nᵈᵉᵗ + Poisson(Nᵈₐᵣₖ) + Normal(0, σᵣₑₐ𝒹ₒᵤₜ)
+```
+
+where:
+- `Nᵈₐᵣₖ` = dark current counts
+- `σᵣₑₐ𝒹ₒᵤₜ` = readout noise (RMS)
+
+### Radiation Dose Calculation
+
+#### Beam Attenuation Model
+
+The beam intensity decreases according to **Beer's law**:
+
+```
+I(z) = I₀ × exp(-∫₀ᶻ μₜₒₜₐₗ(z') dz')
+```
+
+For discrete voxels:
+```
+I(z) = I₀ × ∏ᵢ₌₀ᶻ⁻¹ exp(-μₜₒₜₐₗ(i) × Δz)
+```
+
+#### Energy Absorption
+
+**Energy absorbed per voxel:**
+```
+Eₐᵦₛ = I(z) × μₑₙ(z) × Δz × Eₚₕₒₜₒₙ
+```
+
+where:
+- `μₑₙ` = mass energy absorption coefficient (cm²/g)
+- `Eₚₕₒₜₒₙ = hν` = photon energy (J)
+
+#### Dose Calculation
+
+**Absorbed dose (Gray):**
+```
+D = Eₐᵦₛ / m = Eₐᵦₛ / (ρ × Vᵥₒₓₑₗ)
+```
+
+where:
+- `m` = mass of material in voxel (kg)
+- `ρ` = material density (kg/m³)
+- `Vᵥₒₓₑₗ` = voxel volume (m³)
+- `1 Gy = 1 J/kg`
+
+### Geometry Models
+
+#### Tomography Geometry
+
+**Parallel beam:** X-rays along z-axis, sample rotated by angle `θ`:
+
+```
+Rotation matrix: R(θ) = [cos(θ)  -sin(θ)  0]
+                        [sin(θ)   cos(θ)  0]
+                        [0        0       1]
+```
+
+#### Laminography Geometry
+
+**Tilted beam:** Sample tilted by `α`, then rotated by `θ`:
+
+```
+Combined rotation: R(α,θ) = R_y(α) × R_z(θ)
+                          = [cos(α)cos(θ)  -sin(θ)  sin(α)cos(θ)]
+                            [cos(α)sin(θ)   cos(θ)  sin(α)sin(θ)]
+                            [-sin(α)        0       cos(α)      ]
+```
+
+where:
+- `α` = tilt angle from vertical
+- `θ` = rotation angle around tilt axis
+
+### Numerical Implementation
+
+#### Sampling Requirements
+
+**Fresnel number:** `F = a²/(λz)`
+
+For proper sampling: `F < 1`
+
+**Pixel size constraint:**
+```
+Δx ≤ √(λz/2)
+```
+
+#### Padding Strategy
+
+To avoid wraparound artifacts:
+```
+Nₚₐ𝒹 = N + 2 × PAD
+```
+
+where `PAD ≥ 50` pixels recommended.
+
+#### Memory Optimization
+
+**GPU memory usage:**
+```
+M_GPU ≈ 6 × N_voxels × 4 bytes
+```
+
+for complex64 arrays (original + rotated + material maps + buffers).
+
+### Validation Metrics
+
+#### Quantitative Accuracy
+
+**Beer's law validation:**
+```
+T_analytical = exp(-μ × t)
+T_simulated = I_sim / I₀
+Error = |T_simulated - T_analytical| / T_analytical
+```
+
+Target: `Error < 1%` for uniform materials.
+
+#### Phase Contrast Validation
+
+**Edge enhancement factor:**
+```
+EEF = (I_edge - I_background) / I_background
+```
+
+Compare with analytical Fresnel diffraction for simple edges.
 
 ## Performance
 
@@ -279,4 +542,3 @@ See `examples/` directory for:
 4. Commit changes (`git commit -m 'Add amazing feature'`)
 5. Push to branch (`git push origin feature/amazing-feature`)
 6. Open Pull Request
-
