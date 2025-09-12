@@ -27,3 +27,6 @@ venv/
 build/
 dist/
 *.egg-info/
+
+# Ignore env settings
+*sh
