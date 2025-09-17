@@ -84,18 +84,33 @@ def example_full_scan_with_dose():
     #def golden angle 
     golden_a =180(3-np.sqrt(5))/2 # deg
     golden_a_rad = golden_a * np.pi / 180  # rad
-    num_proj = 360
-    golden_angles_tomo = np.mod(np.arange(num_proj) * golden_a, 180)
-  #  golden_angles_tomo_sorted = np.sort( golden_angles_tomo)  solo se necessario 
-    #golden_angles_tomo = np.mod(np.arange(0, 180, golden_a))  # 0, 0+step, 0+2*step, ... < 180 function used to generate arrays with evenly specified interval.
-    #numpy.arange([start, ]stop, [step, ]dtype=None)
+
+    
+    num_proj = 360    #select number of projections
+    theta_start = 30  # start angle deg
+
+    
+    #golden angles array 
+    #golden_angles_tomo = np.mod(np.arange(0, 180, golden_a))  # 0, 0+step, 0+2*step, ... < 180 function used to generate arrays with evenly specified interval (few data )
+    golden_angles_tomo = np.mod(theta_start + np.arange(num_proj) * golden_a, 180)     # generate golden-angle from theta_start  in mod 180 , function numpy.arange([start, ]stop, [step, ]dtype=None)
+   
+    #golden_angles_tomo_sorted = np.sort( golden_angles_tomo)  # if you need to rearrange 
+    
     projections, dose_stats = scanner.tomography_scan(
          golden_angles_tomo, 
         "golden_tomo_with_dose.h5",
         calculate_dose=False
     )
 
-    
+# Generazione angoli golden-angle a partire da theta_start
+golden_angles_tomo = np.mod(theta_start + np.arange(num_proj) * golden_a, 180)
+
+# Scansione tomografica
+projections, dose_stats = scanner.tomography_scan(
+    golden_angles_tomo, 
+    "golden_tomo_with_dose.h5",
+    calculate_dose=False
+)
 
 
 #oppure  ogni nuovo angolo = precedente + golden angle, modulo 180
