@@ -67,11 +67,11 @@ def example_full_scan_with_dose():
     scanner.load_volume("phantom_bone.zarr", "phantom_bone.json")
     
     # Tomography with dose
-    angles_tomo = np.linspace(0, 180, 180)
+    angles_tomo = np.linspace(0, 180, 360)
     projections, dose_stats = scanner.tomography_scan(
         angles_tomo, 
         "tomo_with_dose.h5",
-        calculate_dose=True
+        calculate_dose=False
     )
     
     print(f"Tomography with dose completed: {projections.shape}")
@@ -169,12 +169,12 @@ def main():
             generate_phantom("bone", shape=(64, 96, 96), voxel_size=(0.5, 0.5, 0.5))
         
         # Run examples
-        example_basic_scan()
-        example_dose_analysis()
+        #example_basic_scan()
+        #example_dose_analysis()
         example_full_scan_with_dose()
-        example_parameter_study()
-        example_compare_geometries()
-        example_material_specific_dose()
+        #example_parameter_study()
+        #example_compare_geometries()
+        #example_material_specific_dose()
         
         print("\n" + "=" * 60)
         print("All examples completed successfully!")
