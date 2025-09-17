@@ -65,14 +65,54 @@ def example_full_scan_with_dose():
     
     scanner = XRayScanner("enhanced_config.json")
     scanner.load_volume("phantom_bone.zarr", "phantom_bone.json")
+
+  
+
+
     
     # Tomography with dose
-    angles_tomo = np.linspace(0, 180, 360)
+    angles_tomo = np.linspace(0, 180, 360)   #np.linspace(start, stop, num=360 num val da generare) da 0 a 180° in 360 step
     projections, dose_stats = scanner.tomography_scan(
         angles_tomo, 
         "tomo_with_dose.h5",
         calculate_dose=False
     )
+
+
+
+    
+    #def golden angle 
+    golden_a =180(3-np.sqrt(5))/2 # deg
+    golden_arad = golden_a * np.pi / 180  # rad
+
+    step = = golden_a =180(3-np.sqrt(5))/2  # golden angle deg
+    golden_angles_tomo = np.arange(0, 180, step)  # 0, 0+step, 0+2*step, ... < 180 function used to generate arrays with evenly specified interval.
+    #numpy.arange([start, ]stop, [step, ]dtype=None)
+
+
+
+
+    
+    #array of angles that increase of golden_a
+
+
+    #utilizzare linespace a passo di golden_a
+
+  
+    # Tomography with dose pass by golden angle 
+    golden_angles_tomo = np.linspace(0, 180, 360)   #np.linspace(start, stop, num=360 num val da generare) da 0 a 180° in 360 step
+    projections, dose_stats = scanner.tomography_scan(
+        angles_tomo, 
+        "tomo_with_dose.h5",
+        calculate_dose=False
+    
+
+
+
+
+
+
+    
     
     print(f"Tomography with dose completed: {projections.shape}")
     return projections, dose_stats
@@ -113,7 +153,7 @@ def example_compare_geometries():
     scanner = XRayScanner("enhanced_config.json")
     scanner.load_volume("phantom_bone.zarr", "phantom_bone.json")
     
-    angles = np.linspace(0, 180, 90)  # Same angles for fair comparison
+    angles = np.linspace(0, 180, 90)  # Same angles for fair comparison 
     
     # Tomography
     print("Running tomography...")
