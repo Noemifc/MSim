@@ -27,7 +27,7 @@ echo "[LSIM] Output library will be: ${OUT_LIB}"
 mkdir -p "${CUDA_SRC_DIR}"
 
 # Compile with position-independent code and as a shared library
-"${NVCC}" \
+"/usr/local/cuda-11.0/bin/nvcc" \
     --compiler-options "-fPIC" \
     -shared \
     -o "${OUT_LIB}" "${SRC_PATH}" \
