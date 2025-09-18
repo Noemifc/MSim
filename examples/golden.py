@@ -21,6 +21,6 @@ golden_angles_tomo = np.mod(theta_start + np.arange(num_proj) * golden_a, 180)  
 golden_angles_tomo = np.mod(theta_start + np.arange(num_proj) * golden_a, 180)  
 projections, dose_stats = scanner.tomography_scan(
     golden_angles_tomo, 
-     "custom_scan.h5", # PREDE QUESTO FILE O LO GENNERA? SE LO GENERA CAMBIA NOME IN "golden_tomo_with_dose.h5"
+     "golden_tomo_with_dose.h5", # PREDE QUESTO FILE O LO GENNERA? SE LO GENERA CAMBIA NOME IN "golden_tomo_with_dose.h5"
     calculate_dose=fALSE
 )
