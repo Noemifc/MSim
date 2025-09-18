@@ -68,7 +68,7 @@ def example_full_scan_with_dose():
 
     
     # Tomography with dose
-    angles_tomo = np.linspace(0, 180, 360)   #np.linspace(start, stop, num=360 num val da generare) da 0 a 180° in 360 step
+    angles_tomo = np.linspace(0, 180, 360)   #np.linspace(start, stop, num 360 ) ->da 0 a 180° in 360 step
     projections, dose_stats = scanner.tomography_scan(
         angles_tomo, 
         "tomo_with_dose.h5",
