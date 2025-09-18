@@ -66,9 +66,6 @@ def example_full_scan_with_dose():
     scanner = XRayScanner("enhanced_config.json")
     scanner.load_volume("phantom_bone.zarr", "phantom_bone.json")
 
-  
-
-
     
     # Tomography with dose
     angles_tomo = np.linspace(0, 180, 360)   #np.linspace(start, stop, num=360 num val da generare) da 0 a 180° in 360 step
@@ -77,8 +74,6 @@ def example_full_scan_with_dose():
         "tomo_with_dose.h5",
         calculate_dose=False
     )
-
-
     
     
     print(f"Tomography with dose completed: {projections.shape}")
