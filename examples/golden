@@ -1,3 +1,16 @@
+mport numpy as np
+
+# esempio: 10 angoli scelti a mano
+angles = np.array([0, 15, 30, 45, 60, 90, 120, 150, 170, 179])
+
+scanner = XRayScanner("enhanced_config.json")
+scanner.load_volume("phantom_bone.zarr", "phantom_bone.json")
+
+projections, dose_stats = scanner.tomography_scan(
+    angles,
+    "tomo_selected.h5",
+    calculate_dose=True
+)
 
     
     #def golden angle 
