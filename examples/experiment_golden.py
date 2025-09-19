@@ -68,7 +68,7 @@ def example_full_scan_with_dose():
 
     
     # Tomography with dose
-    angles_tomo = np.linspace(0, 180, 360)   #np.linspace(start, stop, num 360 ) ->da 0 a 180° in 360 step
+    angles_tomo = np.linspace(0, 180, 360, endpoint=False)   #np.linspace(start, stop, num 360 ) ->da 0 a 180° in 360 step , endpoint mi evita il doppio 180
     projections, dose_stats = scanner.tomography_scan(
         angles_tomo, 
         "tomo_with_dose.h5",
@@ -136,32 +136,25 @@ def example_compare_geometries():
 	from msim.interface import XRayScanner
 	import numpy as np
 
-	# Inizializza lo scanner
-	scanner = XRayScanner("config.json")
-	scanner.load_volume("phantom.zarr", "phantom.json")
-
-	# Definizione golden angle
-	golden_a = 180 * (3 - np.sqrt(5)) / 2  # gradi
-	golden_a_rad = np.deg2rad(golden_a)    # conversione in radianti
-
 	# Parametri proiezioni
 	num_proj = 360    # numero di proiezioni
 	theta_start = 30  # angolo iniziale (gradi)
 
-	# Genera array di golden angles
-	golden_angles_tomo = np.mod(
-	    theta_start + np.arange(num_proj) * golden_a, 180
-	)
-	# Se necessario puoi ordinarli:
-	# golden_angles_tomo_sorted = np.sort(golden_angles_tomo)
+def example_golden_scan(num_proj=360, theta_start=30):
+    """Golden-angle tomography (angles modulo 180)."""
+    golden_a = 180 * (3 - np.sqrt(5)) / 2  # ≈ 68.7539° (adatto per [0,180))
+	#	golden_a_rad = np.deg2rad(golden_a)    # conversione in radianti
+    angles = np.mod(theta_start + np.arange(num_proj) * golden_a, 180)
 
-	# Scan personalizzata con golden angles
-	projections, dose_stats = scanner.tomography_scan(
- 	   golden_angles_tomo,
-  	  "golden_tomo_with_dose.h5",  # genera questo file HDF5
- 	  calculate_dose=False
-	)
+    scanner = XRayScanner("enhanced_config.json")
+    scanner.load_volume("phantom_bone.zarr", "phantom_bone.json")
 
+    projections, dose_stats = scanner.tomography_scan(
+        angles,
+        "golden_tomo_with_dose.h5",
+        calculate_dose=True
+    )
+    return projections, dose_stats
 
 
 
