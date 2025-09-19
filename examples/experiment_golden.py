@@ -131,26 +131,20 @@ def example_compare_geometries():
     
     print("Geometry comparison completed")
     return tomo_dose, lamino_dose
-
-
-	from msim.interface import XRayScanner
-	import numpy as np
-
-	# Parametri proiezioni
-	num_proj = 360    # numero di proiezioni
-	theta_start = 30  # angolo iniziale (gradi)
+	
+	
 
 def example_golden_scan(num_proj=360, theta_start=30):
     """Golden-angle tomography (angles modulo 180)."""
-    golden_a = 180 * (3 - np.sqrt(5)) / 2  # ≈ 68.7539° (adatto per [0,180))
+    golden_a = 180 * (3 - np.sqrt(5)) / 2  
 	#	golden_a_rad = np.deg2rad(golden_a)    # conversione in radianti
-    angles = np.mod(theta_start + np.arange(num_proj) * golden_a, 180)
+    g_angles = np.mod(theta_start + np.arange(num_proj) * golden_a, 180)
 
     scanner = XRayScanner("enhanced_config.json")
     scanner.load_volume("phantom_bone.zarr", "phantom_bone.json")
 
     projections, dose_stats = scanner.tomography_scan(
-        angles,
+        g_angles,
         "golden_tomo_with_dose.h5",
         calculate_dose=True
     )
