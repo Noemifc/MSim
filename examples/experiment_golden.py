@@ -132,6 +132,40 @@ def example_compare_geometries():
     print("Geometry comparison completed")
     return tomo_dose, lamino_dose
 
+
+	from msim.interface import XRayScanner
+	import numpy as np
+
+	# Inizializza lo scanner
+	scanner = XRayScanner("config.json")
+	scanner.load_volume("phantom.zarr", "phantom.json")
+
+	# Definizione golden angle
+	golden_a = 180 * (3 - np.sqrt(5)) / 2  # gradi
+	golden_a_rad = np.deg2rad(golden_a)    # conversione in radianti
+
+	# Parametri proiezioni
+	num_proj = 360    # numero di proiezioni
+	theta_start = 30  # angolo iniziale (gradi)
+
+	# Genera array di golden angles
+	golden_angles_tomo = np.mod(
+	    theta_start + np.arange(num_proj) * golden_a, 180
+	)
+	# Se necessario puoi ordinarli:
+	# golden_angles_tomo_sorted = np.sort(golden_angles_tomo)
+
+	# Scan personalizzata con golden angles
+	projections, dose_stats = scanner.tomography_scan(
+ 	   golden_angles_tomo,
+  	  "golden_tomo_with_dose.h5",  # genera questo file HDF5
+ 	  calculate_dose=False
+	)
+
+
+
+
+
 def example_material_specific_dose():
     """Analyze dose for specific materials."""
     print("\n=== MATERIAL-SPECIFIC DOSE ===")
