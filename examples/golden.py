@@ -1,4 +1,3 @@
-
 from msim.interface import XRayScanner
 import numpy as np
 
