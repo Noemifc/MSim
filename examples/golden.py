@@ -45,7 +45,7 @@ print(" 10 golden angles (float):", golden_angles_tomo[:10])
 # scan golden-angle
 projections, dose_stats = scanner.tomography_scan(
     golden_angles_tomo,
-    "golden_tomo_with_dose.h5",
+    "golden_tomo_with_dose.h5", # salva i dati della proiez
     calculate_dose=False
 )
 
