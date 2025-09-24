@@ -1,5 +1,9 @@
-from msim.interface import XRayScanner
 import numpy as np
+import json
+import os 
+
+from msim.simulator import XRayScanner, quick_tomography , analyze_dose_only
+
 
 #setup scanner 
 scanner = XRayScanner("enhanced_config.json")
