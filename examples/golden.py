@@ -2,10 +2,10 @@ import numpy as np
 import json
 import os 
 import z5py
+import sys
 
 from msim.simulator import XRayScanner, quick_tomography , analyze_dose_only
-export LD_LIBRARY_PATH=/local/cuda-12.0/targets/x86_64-linux/lib:$LD_LIBRARY_PATH
-
+#export LD_LIBRARY_PATH=/local/cuda-12.0/targets/x86_64-linux/lib:$LD_LIBRARY_PATH
 
 #setup scanner 
 scanner = XRayScanner("enhanced_config.json")
