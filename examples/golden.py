@@ -4,8 +4,9 @@ golden-angle tomography example
 """
 #--------------------------------------------
 import numpy as np
-import os 
 import glob
+import os 
+os.environ['LD_LIBRARY_PATH'] = '/usr/local/cuda-12.1/lib64:' + os.environ.get('LD_LIBRARY_PATH', '')
 
 from msim.simulator import XRayScanner
 #--------------------------------------------
