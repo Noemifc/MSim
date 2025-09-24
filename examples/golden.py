@@ -4,34 +4,41 @@ golden-angle tomography example
 """
 #--------------------------------------------
 import numpy as np
-import sys
+#import sys
 import os 
 #import z5py
 #import json
+import glob
 
 # path MSIM per moduli import
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
+#sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from msim.simulator import XRayScanner
 #--------------------------------------------
-#generate phantom if doesn't exist ( sostituire )
-phantom_file = "phantom_bone.zarr"
-phantom_json = "phantom_bone.json"
+#trovare files phantom json
+json_files = glob.glob("*.json")
+print("File JSON trovati:", json_files)
 
-if not os.path.exists(phantom_file):
-    print("Phantom non trovato. Generazione automatica in corso...")
-    from msim.generate_phantom import generate_phantom
-    generate_phantom(
-        "bone",
-        shape=(64, 96, 96),
-        voxel_size=(0.5, 0.5, 0.5)
-    )
-    print("Phantom generato correttamente!")
+#trovare files phantom zarr
+phantoms = glob.glob("*.zarr")
+print("Phantom Zarr trovati:", phantoms)
+
+phantom_file = "phantom_bone.zarr" if "phantom_bone.zarr" in phantoms else (phantoms[0] if phantoms else None)
+phantom_json = "phantom_bone.json" if "phantom_bone.json" in json_files else (json_files[0] if json_files else None)
+
+if phantom_file is None or phantom_json is None:
+    raise FileNotFoundError("Nessun phantom o file JSON trovato nella cartella!")
+
+print("Usando phantom:", phantom_file)
+print("Usando json metadata:", phantom_json)
 
 #--------------------------------------------
 #setup scanner 
-scanner = XRayScanner("enhanced_config.json")
-scanner.load_volume("phantom_bone.zarr", "phantom_bone.json")
+config_file = "enhanced_config.json" if "enhanced_config.json" in json_files else json_files[0]
+print("Usando configurazione:", config_file)
+
+scanner = XRayScanner(config_file)
+scanner.load_volume(phantom_file, phantom_json)
+
 
 #--------------------------------------------
 #golden angles array 
