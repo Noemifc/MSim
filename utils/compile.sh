@@ -1,3 +1,4 @@
+  GNU nano 5.6.1                            compile.sh                                       
 #!/usr/bin/env bash
 set -euo pipefail
 
@@ -17,6 +18,9 @@ set -euo pipefail
 : "${LAM_OUT_LIB:=libmsim.so}"
 : "${NVCC:=nvcc}"
 
+NVCC=/usr/local/cuda-12.1/bin/nvcc
+export PATH=/usr/local/cuda-12.1/bin:$PATH
+
 SRC_PATH="${CUDA_SRC_DIR}/${LAM_KERNEL_SRC}"
 OUT_LIB="${CUDA_SRC_DIR}/${LAM_OUT_LIB}"
 
@@ -27,7 +31,7 @@ echo "[LSIM] Output library will be: ${OUT_LIB}"
 mkdir -p "${CUDA_SRC_DIR}"
 
 # Compile with position-independent code and as a shared library
-"/usr/local/cuda-11.0/bin/nvcc" \
+"${NVCC}" \
     --compiler-options "-fPIC" \
     -shared \
     -o "${OUT_LIB}" "${SRC_PATH}" \
@@ -40,3 +44,7 @@ else
     echo "[LSIM] ERROR: Failed to build ${OUT_LIB}" >&2
     exit 1
 fi
+
+
+
+
