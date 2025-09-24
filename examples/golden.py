@@ -11,17 +11,17 @@ from msim.simulator import XRayScanner
 #--------------------------------------------
 #trovare files phantom json
 json_files = glob.glob("*.json")
-print("File JSON trovati:", json_files)
+print("files Json found :", json_files)
 
 #trovare files phantom zarr
 phantoms = glob.glob("*.zarr")
-print("Phantom Zarr trovati:", phantoms)
+print("phantom Zarr found:", phantoms)
 
 phantom_file = "phantom_bone.zarr" if "phantom_bone.zarr" in phantoms else (phantoms[0] if phantoms else None)
 phantom_json = "phantom_bone.json" if "phantom_bone.json" in json_files else (json_files[0] if json_files else None)
 
 if phantom_file is None or phantom_json is None:
-    raise FileNotFoundError("Nessun phantom o file JSON trovato nella cartella!")
+    raise FileNotFoundError("No phantom or JSON files found in the folder")
 
 print("Usando phantom:", phantom_file)
 print("Usando json metadata:", phantom_json)
