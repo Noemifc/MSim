@@ -38,7 +38,7 @@ scanner.load_volume("phantom_bone.zarr", "phantom_bone.json")
 
 golden_a = 180*(3 - np.sqrt(5)) / 2  # deg
 golden_a_rad = golden_a*np.pi / 180  # rad 
-num_proj = 360     #select number of projections , int
+num_proj = 36     #select number of projections , int
 theta_start = 30   # start angle deg
 
 golden_angles_tomo = np.mod(theta_start + np.arange(num_proj) * golden_a, 180)
