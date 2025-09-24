@@ -4,14 +4,9 @@ golden-angle tomography example
 """
 #--------------------------------------------
 import numpy as np
-#import sys
 import os 
-#import z5py
-#import json
 import glob
 
-# path MSIM per moduli import
-#sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from msim.simulator import XRayScanner
 #--------------------------------------------
 #trovare files phantom json
@@ -30,7 +25,6 @@ if phantom_file is None or phantom_json is None:
 
 print("Usando phantom:", phantom_file)
 print("Usando json metadata:", phantom_json)
-
 #--------------------------------------------
 #setup scanner 
 config_file = "enhanced_config.json" if "enhanced_config.json" in json_files else json_files[0]
@@ -38,11 +32,8 @@ print("Usando configurazione:", config_file)
 
 scanner = XRayScanner(config_file)
 scanner.load_volume(phantom_file, phantom_json)
-
-
 #--------------------------------------------
 #golden angles array 
-
 golden_a = 180*(3 - np.sqrt(5)) / 2  # deg
 golden_a_rad = golden_a*np.pi / 180  # rad 
 num_proj = 360    #select number of projections , int
