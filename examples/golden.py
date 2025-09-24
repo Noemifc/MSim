@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Golden-angle tomography example with automatic phantom generation.
+golden-angle tomography example 
 """
 #--------------------------------------------
 import numpy as np
