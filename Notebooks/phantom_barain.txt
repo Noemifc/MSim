@@ -1,0 +1,17 @@
+{
+  "voxel_size": [0.5, 0.5, 0.5],
+  "lookup": {
+    vuoto/aria = "0": { "composition": {}, "density": 0.0 },
+    materia grigia = "1": { "composition": { "H": 10, "C": 5, "N": 2, "O": 4 }, "density": 1.04 },
+    materia bianca = "2": { "composition": { "H": 12, "C": 8, "N": 1, "O": 3 }, "density": 1.02 },
+   liquor cerebrospinale =  "3": { "composition": { "H": 2, "O": 1 }, "density": 1.0 },
+    sangue = "4": { "composition": { "H": 8, "C": 4, "N": 1, "O": 4, "Fe": 0.01 }, "density": 1.06 },
+    osso cranico = "5": { "composition": { "Ca": 10, "P": 6, "O": 26, "H": 2 }, "density": 1.9 },
+    calcificazioni / lesioni dure = "6": { "composition": { "Ca": 1, "C": 1, "O": 3 }, "density": 2.7 },
+    mezzo di contrasto iodato = "7": { "composition": { "I": 1, "H": 2, "O": 1 }, "density": 1.5 }
+  }
+}
+
+
+// realtà le composizioni elementari del cervello si prendono da tabelle (tipo ICRU o NIST) 
+//che hanno valori precisi di frazioni di massa per H, C, N, O, P, S, ecc.
