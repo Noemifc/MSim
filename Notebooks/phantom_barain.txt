@@ -1,5 +1,43 @@
 {
-  "voxel_size": [0.5, 0.5, 0.5],
+  "voxel_size": [0.5, 0.5, 0.5], // i voxel sono in mm
+
+//lato = 0.5 mm = 0.5 millimetri = 500 micrometri (µm).
+Calcolo: 0.5 mm × 1000 µm/mm = 500 µm
+
+//volume = 0.5 mm × 0.5 mm × 0.5 mm
+0.5 × 0.5 = 0.25
+0.25 × 0.5 = 0.125 mm³
+
+
+Esempio: massa del voxel (con densità tessuto cerebrale ~1.04 g/cm³)
+
+densità ≈ 1.04 g/cm³; volume voxel = 0.000125 cm³.
+massa = 1.04 g/cm³ × 0.000125 cm³
+1.04 × 0.000125 = 0.00013 g = 0.13 mg.
+Quindi un singolo voxel di materia cerebrale pesa circa 0.13 milligrammi (con questa densità di riferimento).
+
+con voxel isotropico da 0.5 mm la dimensione minima teorica campionabile è dell’ordine di ~1.0 mm (due voxel per “attraversare” una struttura, regola pratica/Nyquist).
+
+strutture grandi (es. spessore corticale 2–4 mm) sono ben campionate (diversi voxel attraversano la corteccia); layer corticali o fibre sottili (<0.5 mm) non sono risolte dettagliatamente.
+
+0.5 mm è una risoluzione alta per CT e buona anche per alcune scansioni MRI ad alta risoluzione, ma aumenta richieste di memoria e, nel caso di acquisizioni reali, può abbassare SNR (se lavori con dati acquisiti).
+
+
+Struttire cerebrali : 
+
+spessore corticale ~2–4 mm
+piccoli nuclei <1 mm
+microstruttura corticale <0.5 mm
+
+ricorda niquist : struttura di dimensione  d servono 2 voxel su quella dimensione : voxel lateral d/2 
+
+per micro-CT ≪1 mm
+
+SNR e costi: voxel più piccoli → più voxels → più memoria, CPU/GPU, e (se acquisizione reale) peggior SNR o tempi maggiori.
+
+
+
+
   "lookup": {
     vuoto/aria = "0": { "composition": {}, "density": 0.0 },
     materia grigia = "1": { "composition": { "H": 10, "C": 5, "N": 2, "O": 4 }, "density": 1.04 },
