@@ -18,8 +18,8 @@ print("files Json found :", json_files)
 phantoms = glob.glob("*.zarr")
 print("phantom Zarr found:", phantoms)
 
-phantom_file = "phantom_bone.zarr" if "phantom_bone.zarr" in phantoms else (phantoms[0] if phantoms else None)
-phantom_json = "phantom_bone.json" if "phantom_bone.json" in json_files else (json_files[0] if json_files else None)
+phantom_file = "phantom_brain.zarr" if "phantom_brain.zarr" in phantoms else (phantoms[0] if phantoms else None)
+phantom_json = "phantom_brain.json" if "phantom_brain.json" in json_files else (json_files[0] if json_files else None)
 
 if phantom_file is None or phantom_json is None:
     raise FileNotFoundError("No phantom or JSON files found in the folder")
