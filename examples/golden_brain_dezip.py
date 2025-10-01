@@ -25,15 +25,16 @@ else:
     print(f"Nessun file zip trovato, cercando cartella {phantom_dir}")
 
 #--------------------------------------------
+#--------------------------------------------
 # trova files phantom json
 json_files = glob.glob("*.json")
 print("files Json found :", json_files)
 
-# trova files phantom zarr
-phantoms = glob.glob("*.zarr")
+# trova cartelle phantom zarr (non solo file!)
+phantoms = [d for d in os.listdir(".") if d.endswith(".zarr") and os.path.isdir(d)]
 print("phantom Zarr found:", phantoms)
 
-phantom_file = phantom_dir if phantom_dir in phantoms else (phantoms[0] if phantoms else None)
+phantom_file = phantom_dir if os.path.isdir(phantom_dir) else (phantoms[0] if phantoms else None)
 phantom_json = "phantom_brain.json" if "phantom_brain.json" in json_files else (json_files[0] if json_files else None)
 
 if phantom_file is None or phantom_json is None:
@@ -41,6 +42,7 @@ if phantom_file is None or phantom_json is None:
 
 print("Usando phantom:", phantom_file)
 print("Usando json metadata:", phantom_json)
+
 #--------------------------------------------
 # setup scanner 
 config_file = "enhanced_config.json" if "enhanced_config.json" in json_files else json_files[0]
