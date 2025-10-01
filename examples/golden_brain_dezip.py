@@ -13,8 +13,8 @@ os.environ['LD_LIBRARY_PATH'] = '/usr/local/cuda-12.1/lib64:' + os.environ.get('
 from msim.simulator import XRayScanner
 #--------------------------------------------
 # estrai file Zarr dal zip se esiste
-zip_file = "BCI-DNI_brain.zarr.zip"
-phantom_dir = "BCI-DNI_brain.zarr"
+zip_file = "phantom_brain.zarr.zip"
+phantom_dir = "phantom_brain.zarr"
 
 if os.path.exists(zip_file):
     print(f"Estrazione {zip_file}...")
