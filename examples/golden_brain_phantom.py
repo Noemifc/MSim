@@ -1,63 +1,77 @@
 #!/usr/bin/env python3
 """
-golden-angle tomography example 
+Golden-angle tomography senza z5py
+Carica direttamente brain_map.zarr come array NumPy e usa JSON metadati
+Visualizza proiezioni e volume con Napari
 """
-#--------------------------------------------
+import os
 import numpy as np
-import glob
-import os 
-os.environ['LD_LIBRARY_PATH'] = '/usr/local/cuda-12.1/lib64:' + os.environ.get('LD_LIBRARY_PATH', '')
-
+import zarr
+import json
 from msim.simulator import XRayScanner
-#--------------------------------------------
-#trovare files phantom json
-json_files = glob.glob("*.json")
-print("files Json found :", json_files)
 
-#trovare files phantom zarr
-phantoms = glob.glob("*.zarr")
-print("phantom Zarr found:", phantoms)
+def main():
+    base_path = "/data2/Noemi/MSim/examples"
+    zarr_file = os.path.join(base_path, "brain_map.zarr")
+    json_file = os.path.join(base_path, "brain_lookup.json")
+    config_file = os.path.join(base_path, "enhanced_config.json")
 
-phantom_file = "phantom_brain.zarr" if "phantom_brain.zarr" in phantoms else (phantoms[0] if phantoms else None)
-phantom_json = "phantom_brain.json" if "phantom_brain.json" in json_files else (json_files[0] if json_files else None)
+    # Controllo esistenza dei file
+    for f in [zarr_file, json_file, config_file]:
+        if not os.path.exists(f):
+            raise FileNotFoundError(f"{f} non trovato")
 
-if phantom_file is None or phantom_json is None:
-    raise FileNotFoundError("No phantom or JSON files found in the folder")
+    # 1️⃣ Carica Zarr come array NumPy
+    print(f"Caricando Zarr originale: {zarr_file}")
+    z = zarr.open(zarr_file, mode='r')
+    volume_data = z[:]
+    print(f"Volume shape: {volume_data.shape}")
 
-print("Usando phantom:", phantom_file)
-print("Usando json metadata:", phantom_json)
-#--------------------------------------------
-#setup scanner 
-config_file = "enhanced_config.json" if "enhanced_config.json" in json_files else json_files[0]
-print("Usando configurazione:", config_file)
+    # 2️⃣ Carica metadati JSON
+    with open(json_file, 'r') as f:
+        metadata = json.load(f)
 
-scanner = XRayScanner(config_file)
-scanner.load_volume(phantom_file, phantom_json)
-#--------------------------------------------
-#golden angles array 
-golden_a = 180*(3 - np.sqrt(5)) / 2  # deg
-golden_a_rad = golden_a*np.pi / 180  # rad 
-num_proj = 360    #select number of projections , int
-theta_start = 30   # start angle deg
+    lookup = metadata["lookup"]
+    voxel_size = metadata.get("voxel_size", [1.0, 1.0, 1.0])
 
-golden_angles_tomo = np.mod(theta_start + np.arange(num_proj) * golden_a, 180)
-print(" 10 golden angles (float):", golden_angles_tomo[:10])
+    # 3️⃣ Setup scanner
+    scanner = XRayScanner(config_file)
+    scanner.volume = volume_data
+    scanner.lookup = lookup
+    scanner.voxel_size = voxel_size
 
-# scan golden-angle
-projections, dose_stats = scanner.tomography_scan(
-    golden_angles_tomo,
-    "golden_tomo_with_dose.h5", # salva i dati della proiez
-    calculate_dose=False
-)
+    # 4️⃣ Golden-angle scan
+    golden_a = 180*(3 - np.sqrt(5)) / 2
+    num_proj = 180
+    theta_start = 0
+    golden_angles_tomo = np.mod(theta_start + np.arange(num_proj) * golden_a, 180)
+    print("10 golden angles:", golden_angles_tomo[:10])
 
-# golden-angle sorted 
-golden_angles_tomo_sorted = np.sort(golden_angles_tomo) #golden angles sorted
-print("10 angles sorted", golden_angles_tomo_sorted[:10])
+    projections, dose_stats = scanner.tomography_scan(
+        golden_angles_tomo,
+        os.path.join(base_path, "golden_tomo_with_dose.h5"),
+        calculate_dose=False
+    )
 
-# scan golden-angle sorted 
-projections_sorted, dose_stats_sorted = scanner.tomography_scan(
-    golden_angles_tomo_sorted,
-    "golden_angles_tomo_sorted.h5",
-    calculate_dose=False
-)
-print("Golden-angle scans complete")
+    golden_angles_tomo_sorted = np.sort(golden_angles_tomo)
+    print("10 sorted angles:", golden_angles_tomo_sorted[:10])
+
+    projections_sorted, dose_stats_sorted = scanner.tomography_scan(
+        golden_angles_tomo_sorted,
+        os.path.join(base_path, "golden_angles_tomo_sorted.h5"),
+        calculate_dose=False
+    )
+
+    print("Golden-angle scans complete")
+
+    # ----------------------------
+    # Visualizzazione interattiva con Napari
+    # ----------------------------
+    import napari
+    viewer = napari.Viewer()
+    viewer.add_image(np.array(projections_sorted), name='Golden Projections Sorted')
+    viewer.add_image(volume_data, name='Volume Brain', scale=voxel_size)
+    napari.run()
+
+if __name__ == "__main__":
+    main()
