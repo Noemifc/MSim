@@ -1,0 +1,118 @@
+#!/usr/bin/env python3
+"""
+Golden-angle tomography con ricostruzione FBP
+Compatibile con TOCAI (senza GUI) e locale (con Napari)
+
+- Carica brain_map.zarr + JSON lookup
+- Simula tomografia golden-angle
+- Ricostruisce con TomoPy (gridrec)
+- Salva proiezioni, slice ricostruita e volume 3D
+- Se disponibile, apre Napari
+"""
+
+import os
+import numpy as np
+import zarr
+import json
+import matplotlib.pyplot as plt
+from msim.simulator import XRayScanner
+
+#--------------------------------------------
+def main():
+    base_path = "/home/beams/NFICO/Desktop/Noe/examples"
+    zarr_file = os.path.join(base_path, "brain_map.zarr")
+    json_file = os.path.join(base_path, "brain_lookup.json")
+    config_file = os.path.join(base_path, "enhanced_config.json")
+
+    # Controllo esistenza file
+    for f in [zarr_file, json_file, config_file]:
+        if not os.path.exists(f):
+            raise FileNotFoundError(f"{f} non trovato")
+
+    # 1️⃣ Carica volume
+    print(f"[INFO] Caricando Zarr originale: {zarr_file}")
+    z = zarr.open(zarr_file, mode='r')
+    volume_data = z[:]
+    print(f"[INFO] Volume shape: {volume_data.shape}")
+
+    # 2️⃣ Metadati
+    with open(json_file, 'r') as f:
+        metadata = json.load(f)
+    lookup = metadata["lookup"]
+    voxel_size = metadata.get("voxel_size", [1.0, 1.0, 1.0])
+
+    # 3️⃣ Proiezione test
+    proj_test = volume_data.sum(axis=0)
+    proj_norm = (proj_test - proj_test.min()) / (proj_test.max() - proj_test.min() + 1e-8)
+    test_png = os.path.join(base_path, "proiezione_test.png")
+    plt.imsave(test_png, proj_norm, cmap='gray')
+    print(f"[OK] Proiezione di test salvata come: {test_png}")
+
+    # 4️⃣ Setup scanner
+    scanner = XRayScanner(config_file)
+    scanner.volume = volume_data
+    scanner.lookup = lookup
+    scanner.voxel_size = voxel_size
+
+    # 5️⃣ Golden-angle scan
+    golden_a = 180 * (3 - np.sqrt(5)) / 2  # angolo aureo
+    num_proj = 180
+    theta_start = 0
+    golden_angles_tomo = np.mod(theta_start + np.arange(num_proj) * golden_a, 180)
+    print(f"[INFO] Generati {num_proj} angoli golden: {golden_angles_tomo[:5]} ...")
+
+    out_file = os.path.join(base_path, "golden_tomo_with_dose.h5")
+    projections, dose_stats = scanner.tomography_scan(
+        golden_angles_tomo,
+        out_file,
+        calculate_dose=False
+    )
+    print(f"[OK] Golden-angle scan salvato in: {out_file}")
+
+    # 6️⃣ Ricostruzione con TomoPy
+    import tomopy
+    print("[INFO] Inizio ricostruzione (FBP - gridrec) ...")
+    angles_rad = np.deg2rad(golden_angles_tomo)
+    recon = tomopy.recon(
+        projections.astype(np.float32),
+        angles_rad,
+        algorithm='gridrec'
+    )
+    print(f"[OK] Ricostruzione completata, shape: {recon.shape}")
+
+    # 7️⃣ Salvataggio risultati
+    slice_idx = recon.shape[0] // 2
+    slice_img = recon[slice_idx]
+    slice_norm = (slice_img - np.min(slice_img)) / (np.max(slice_img) - np.min(slice_img) + 1e-12)
+
+    recon_png = os.path.join(base_path, "reconstruction_slice.png")
+    plt.imsave(recon_png, slice_norm, cmap='gray')
+    print(f"[OK] Slice ricostruita salvata in: {recon_png}")
+
+    recon_npy = os.path.join(base_path, "brain_reconstruction.npy")
+    np.save(recon_npy, recon)
+    print(f"[OK] Volume 3D ricostruito salvato in: {recon_npy}")
+
+    # 8️⃣ Modalità headless o Napari
+    try:
+        import napari
+        print("[INFO] Avvio Napari per visualizzazione interattiva...")
+        viewer = napari.Viewer()
+        viewer.add_image(recon, name="Brain Reconstruction", colormap="gray")
+        napari.run()
+    except Exception as e:
+        print(f"[WARN] Napari non disponibile ({e})")
+        # salva anche in formato tiff per visualizzazione offline
+        try:
+            import tifffile
+            recon_tiff = os.path.join(base_path, "brain_reconstruction.tiff")
+            tifffile.imwrite(recon_tiff, recon.astype(np.float32))
+            print(f"[OK] Volume salvato come: {recon_tiff}")
+        except Exception as e2:
+            print(f"[WARN] TIFF non salvato ({e2})")
+
+    print("[DONE] Tutto completato con successo ✅")
+
+#--------------------------------------------
+if __name__ == "__main__":
+    main()
