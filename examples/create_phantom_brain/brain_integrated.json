@@ -1,0 +1,52 @@
+{
+  "voxel_size": [2.0, 2.0, 2.0],
+  "lookup": {
+    "0": {
+      "name": "air",
+      "density": 0.0012,
+      "mu": 0.0
+    },
+    "1": {
+      "name": "gyrus corticali",
+      "density": 1.03,
+      "mu": 0.19
+    },
+    "2": {
+      "name": "ippocampo + amigdala",
+      "density": 1.04,
+      "mu": 0.2
+    },
+    "3": {
+      "name": "insula",
+      "density": 1.045,
+      "mu": 0.21
+    },
+    "4": {
+      "name": "globo pallidus + putamen",
+      "density": 1.05,
+      "mu": 0.23
+    }
+  },
+  "regions": [
+    {"ID": 0, "Region": "background", "VoxelCount": 23199775, "GroupID": 0},
+    {"ID": 106, "Region": "R. superior frontal gyrus - anterior", "VoxelCount": 24223, "GroupID": 1},
+    {"ID": 107, "Region": "L. superior frontal gyrus - anterior", "VoxelCount": 550, "GroupID": 1},
+    {"ID": 108, "Region": "R. superior frontal gyrus - posterior", "VoxelCount": 566, "GroupID": 1},
+    {"ID": 109, "Region": "L. superior frontal gyrus - posterior", "VoxelCount": 1164, "GroupID": 1},
+    {"ID": 112, "Region": "R. middle frontal gyrus - anterior", "VoxelCount": 1130, "GroupID": 1},
+    {"ID": 113, "Region": "L. middle frontal gyrus - anterior", "VoxelCount": 601, "GroupID": 1},
+    {"ID": 114, "Region": "R. middle frontal gyrus - posterior", "VoxelCount": 619, "GroupID": 1},
+    {"ID": 115, "Region": "L. middle frontal gyrus - posterior", "VoxelCount": 3360, "GroupID": 1},
+    {"ID": 502, "Region": "R. insula - anterior", "VoxelCount": 335205, "GroupID": 3},
+    {"ID": 503, "Region": "L. insula - anterior", "VoxelCount": 7935, "GroupID": 3},
+    {"ID": 504, "Region": "R. insula - posterior", "VoxelCount": 7254, "GroupID": 3},
+    {"ID": 505, "Region": "L. insula - posterior", "VoxelCount": 51293, "GroupID": 3},
+    {"ID": 616, "Region": "R. globus pallidus", "VoxelCount": 50, "GroupID": 4},
+    {"ID": 630, "Region": "R. putamen", "VoxelCount": 1, "GroupID": 4},
+    {"ID": 380, "Region": "R. hippocampus", "VoxelCount": 118042, "GroupID": 2},
+    {"ID": 381, "Region": "L. hippocampus", "VoxelCount": 130890, "GroupID": 2},
+    {"ID": 390, "Region": "R. amygdala", "VoxelCount": 113815, "GroupID": 2},
+    {"ID": 391, "Region": "L. amygdala", "VoxelCount": 303920, "GroupID": 2}
+  ]
+}
+ 

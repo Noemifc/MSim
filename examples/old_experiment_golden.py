@@ -150,6 +150,33 @@ def example_golden_scan(num_proj=360, theta_start=30):
     )
     return projections, dose_stats
 
+def golden_scan_interl(num_proj_interl=100, theta_start_interl=None,
+                        config_file="enhanced_config.json",
+                        volume_file="phantom_bone.zarr",
+                        json_file="phantom_bone.json"):
+    print("\n=== INTERLACED GOLDEN-ANGLE SCAN ===")
+    end_angle_interl = 360.
+    golden_a_interl = end_angle_interl * (3 - np.sqrt(5)) / 2
+
+    if theta_start_interl is None:
+        theta_start_interl = np.array([0.])
+    theta_start_interl = np.array(theta_start_interl)
+
+    golden_angles_interl = np.mod(
+        theta_start_interl[:, None] + np.arange(num_proj_interl) * golden_a_interl,
+        end_angle_interl
+    ).flatten()
+    golden_angles_interl = np.unique(np.sort(golden_angles_interl))
+
+    scanner = XRayScanner(config_file)
+    scanner.load_volume(volume_file, json_file)
+
+    projections, dose_stats = scanner.tomography_scan(
+        golden_angles_interl,
+        "golden_tomo_interlaced_with_dose.h5",
+        calculate_dose=False
+    )
+    return projections, dose_stats
 
 
 
@@ -212,6 +239,9 @@ def main():
         print(f"Error: {e}")
         import traceback
         traceback.print_exc()
+
+
+
 
 if __name__ == "__main__":
     main()

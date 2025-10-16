@@ -1,0 +1,162 @@
+# Atlas Name: USCBrain
+0	background
+106	R. superior frontal gyrus - anterior
+107	L. superior frontal gyrus - anterior
+108	R. superior frontal gyrus - posterior
+109	L. superior frontal gyrus - posterior
+112	R. middle frontal gyrus - anterior
+113	L. middle frontal gyrus - anterior
+114	R. middle frontal gyrus - posterior
+115	L. middle frontal gyrus - posterior
+124	R. pars opercularis - superior
+125	L. pars opercularis - superior
+126	R. pars opercularis - inferior
+127	L. pars opercularis - inferior
+130	R. pars triangularis - anterior
+131	L. pars triangularis - anterior
+132	R. pars triangularis - middle
+133	L. pars triangularis - middle
+134	R. pars triangularis - posterior
+135	L. pars triangularis - posterior
+136	R. pars orbitalis
+137	L. pars orbitalis
+144	R. precentral gyrus - inferior
+145	L. precentral gyrus - inferior
+146	R. precentral gyrus - superior
+147	L. precentral gyrus - superior
+154	R. transverse frontal gyrus - mesial
+155	L. transverse frontal gyrus - mesial
+156	R. transverse frontal gyrus - lateral
+157	L. transverse frontal gyrus - lateral
+158	R. gyrus rectus
+159	L. gyrus rectus
+164	R. middle orbitofrontal gyrus
+165	L. middle orbitofrontal gyrus
+166	R. anterior orbitofrontal gyrus
+167	L. anterior orbitofrontal gyrus
+168	R. posterior orbitofrontal gyrus
+169	L. posterior orbitofrontal gyrus
+172	R. lateral orbitofrontal gyrus - anterior
+173	L. lateral orbitofrontal gyrus - anterior
+174	R. lateral orbitofrontal gyrus - posterior
+175	L. lateral orbitofrontal gyrus - posterior
+182	R. paracentral lobule
+183	L. paracentral lobule
+186	R. cingulate gyrus - anterior
+187	L. cingulate gyrus - anterior
+188	R. cingulate gyrus - middle
+189	L. cingulate gyrus - middle
+190	R. cingulate gyrus - posterior
+191	L. cingulate gyrus - posterior
+192	R. subcallosal gyrus
+193	L. subcallosal gyrus
+224	R. postcentral gyrus - superior
+225	L. postcentral gyrus - superior
+226	R. postcentral gyrus - inferior
+227	L. postcentral gyrus - inferior
+230	R. supramarginal gyrus - anterior
+231	L. supramarginal gyrus - anterior
+232	R. supramarginal gyrus - posterior
+233	L. supramarginal gyrus - posterior
+236	R. angular gyrus - anterior
+237	L. angular gyrus - anterior
+238	R. angular gyrus - middle
+239	L. angular gyrus - middle
+240	R. angular gyrus - posterior
+241	L. angular gyrus - posterior
+244	R. superior parietal gyrus - anterior
+245	L. superior parietal gyrus - anterior
+246	R. superior parietal gyrus - posterior
+247	L. superior parietal gyrus - posterior
+254	R. precuneus - superior
+255	L. precuneus - superior
+256	R. precuneus - inferior
+257	L. precuneus - inferior
+310	R. temporal pole
+311	L. temporal pole
+324	R. superior temporal gyrus - anterior
+325	L. superior temporal gyrus - anterior
+326	R. superior temporal gyrus - middle
+327	L. superior temporal gyrus - middle
+328	R. superior temporal gyrus - posterior
+329	L. superior temporal gyrus - posterior
+330	R. transverse temporal gyrus
+331	L. transverse temporal gyrus
+336	R. middle temporal gyrus - anterior
+337	L. middle temporal gyrus - anterior
+338	R. middle temporal gyrus - middle
+339	L. middle temporal gyrus - middle
+340	R. middle temporal gyrus - dorsoposterior
+341	L. middle temporal gyrus - dorsoposterior
+342	R. middle temporal gyrus - ventroposterior
+343	L. middle temporal gyrus - ventroposterior
+346	R. inferior temporal gyrus - anterior
+347	L. inferior temporal gyrus - anterior
+348	R. inferior temporal gyrus - middle
+349	L. inferior temporal gyrus - middle
+350	R. inferior temporal gyrus - posterior
+351	L. inferior temporal gyrus - posterior
+354	R. fusiform gyrus - anterior
+355	L. fusiform gyrus - anterior
+356	R. fusiform gyrus - posterior
+357	L. fusiform gyrus - posterior
+372	R. parahippocampal gyrus
+373	L. parahippocampal gyrus
+380	R. hippocampus
+381	L. hippocampus
+390	R. amygdala
+391	L. amygdala
+424	R. superior occipital gyrus - superior
+425	L. superior occipital gyrus - superior
+426	R. superior occipital gyrus - inferior
+427	L. superior occipital gyrus - inferior
+432	R. middle occipital gyrus - dorsoanterior
+433	L. middle occipital gyrus - dorsoanterior
+434	R. middle occipital gyrus - ventroanterior
+435	L. middle occipital gyrus - ventroanterior
+436	R. middle occipital gyrus - posterior
+437	L. middle occipital gyrus - posterior
+444	R. inferior occipital gyrus - anterior
+445	L. inferior occipital gyrus - anterior
+446	R. inferior occipital gyrus - dorsoposterior
+447	L. inferior occipital gyrus - dorsoposterior
+448	R. inferior occipital gyrus - ventroposterior
+449	L. inferior occipital gyrus - ventroposterior
+452	R. lingual gyrus - anterior
+453	L. lingual gyrus - anterior
+454	R. lingual gyrus - posterior
+455	L. lingual gyrus - posterior
+458	R. cuneus - anterior
+459	L. cuneus - anterior
+460	R. cuneus - posterior
+461	L. cuneus - posterior
+502	R. insula - anterior
+503	L. insula - anterior
+504	R. insula - posterior
+505	L. insula - posterior
+616	R. globus pallidus
+617	L. globus pallidus
+620	R. caudate nucleus
+621	L. caudate nucleus
+630	R. putamen
+631	L. putamen
+640	R. thalamus
+641	L. thalamus
+650	R. nucleus accumbens
+651	L. nucleus accumbens
+670	R. superior colliculus
+671	L. superior colliculus
+696	R. inferior colliculus
+697	L. inferior colliculus
+698	R. mamillary body
+699	L. mamillary body
+710	pineal gland
+720	R. lateral ventricle
+721	L. lateral ventricle
+740	third ventricle
+760	fourth ventricle
+780	cerebral aqueduct
+800	Brainstem
+850	Corpus Callosum
+900	Cerebellum
+2000	White matter (cerebrum)

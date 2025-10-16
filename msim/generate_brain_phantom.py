@@ -10,7 +10,7 @@ import shutil
 import json
 
 # --- CONFIGURAZIONE ---
-input_tiff = 'brain.tiff'
+input_tiff = 'BCI-DNI_brain.bfc.tif'
 output_zarr = 'brain_cerebral.zarr'
 output_json = 'brain_cerebral.json'
 voxel_size = (0.1, 0.1, 0.1)  # voxel piccoli

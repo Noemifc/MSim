@@ -1,0 +1,64 @@
+1️⃣ Il fantoccio vero e proprio
+
+Il fantoccio deve essere una volume 3D rappresentato come array (tipo NumPy) o in un formato supportato da MSIM (.zarr o .h5). Deve avere:
+
+Shape: dimensioni (z, y, x). Nel tuo esempio, bone è (64, 96, 96).
+
+Voxel size: dimensioni fisiche dei voxel, ad esempio [0.5, 0.5, 0.5] µm.
+
+Materiali / etichette: un array di interi che indica a quale materiale appartiene ogni voxel.
+
+Esempio: un fantoccio “soft tissue” potrebbe avere materiali per muscolo, grasso, acqua, ossa se vuoi anche una piccola schematizzazione.
+
+2️⃣ File di configurazione
+
+Il codice MSIM genera un file JSON con le informazioni del fantoccio e le proprietà dei materiali (phantom_bone.json). Per un nuovo fantoccio:
+
+Devi avere un file JSON simile che descriva le densità e proprietà dei materiali.
+
+Etichette materiali devono corrispondere a quelle dell’array del volume.
+
+Esempio:
+
+{
+  "materials": {
+    "0": {"name": "air", "density": 0.0},
+    "1": {"name": "water", "density": 1.0},
+    "2": {"name": "muscle", "density": 1.06},
+    "3": {"name": "bone", "density": 1.92}
+  }
+}
+
+3️⃣ Il fantoccio in formato compatibile
+
+Puoi creare un array NumPy e salvarlo in .zarr o .h5 usando zarr.save() o h5py.
+
+Oppure partire da immagini stack (DICOM o TIFF) e convertirle in array 3D.
+
+4️⃣ Modificare lo script
+
+Nel tuo experiment_golden.py:
+
+phantom_file = "phantom_bone.zarr"
+phantom_json = "phantom_bone.json"
+
+
+Li cambi con i tuoi:
+
+phantom_file = "phantom_mio.zarr"
+phantom_json = "phantom_mio.json"
+
+
+Poi tutto il resto del codice dovrebbe funzionare, a patto che i materiali e shape siano correttamente definiti.
+
+5️⃣ Controllare i parametri fisici
+
+Se il tuo fantoccio è molto più grande o più piccolo di bone, potresti dover adattare:
+
+Numero di proiezioni
+
+Dimensione dei voxel
+
+Calcolo dose (se cambia la densità media)
+
+💡 Extra tip: se vuoi solo testare, puoi fare un fantoccio piccolo e semplice tipo cubo di “acqua” con qualche inserto “osso” per vedere subito se gira, prima di passare a un fantoccio complesso.
