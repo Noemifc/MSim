@@ -3,6 +3,8 @@
 *.h5
 *.prof
 *.zarr
+*.tif
+*.tiff
 
 # Ignore logs
 *.log

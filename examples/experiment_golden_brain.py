@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """
 Enhanced X-ray simulation example with photon statistics and dose calculation.
+
+export PYTHONPATH=/mnt/c/Users/noemi/Desktop/Noe:$PYTHONPATH
+
+
+
 """
 
 
@@ -236,32 +241,62 @@ def example_golden_scan_ordered(num_proj=36, theta_start=0):
 
 #Da rivedere sopratutto offsets
 
-def example_golden_scan_interl(num_proj_interl=100, theta_start_interl=None,
-                       config_file="enhanced_config.json",
-                       volume_file="phantom_b.zarr",
-                       json_file="phantom_b.json"):
-    print("\n=== INTERLACED GOLDEN-ANGLE SCAN ===")
-    end_angle_interl = 360.
-    golden_a_interl = end_angle_interl * (3 - np.sqrt(5)) / 2
+'''
+ # Calcolo automatico dei starting points se non specificati : una alternativa selezionando in automatico 
+ gli offsets
 
+def example_golden_scan_interl(num_proj_interl=100, num_series=3, theta_start_interl=None,
+                               config_file="enhanced_config.json",
+                               volume_file="phantom_b.zarr",
+                               json_file="phantom_b.json"):
+    print("\n=== INTERLACED GOLDEN-ANGLE SCAN ===")
+
+    end_angle_interl = 360.
+    golden_a_interl = end_angle_interl * (3 - np.sqrt(5)) / 2  # ~111.246°
+
+    # Calcolo automatico dei starting points se non specificati
     if theta_start_interl is None:
-        theta_start_interl = np.array([0.])
+        # Divide 0-360° in num_series punti equidistanti
+        theta_start_interl = np.linspace(0, end_angle_interl, num_series, endpoint=False)
+    theta_start_interl = np.array(theta_start_interl)
+    
+    
+    #prosegue con calcolo angoli interlacciati
+
+'''
+
+def example_golden_scan_interl(num_proj_interl=100, theta_start_interl=None,
+                               config_file="enhanced_config.json",
+                               volume_file="phantom_b.zarr",
+                               json_file="phantom_b.json"):
+    print("\n=== INTERLACED GOLDEN-ANGLE SCAN ===")
+
+    end_angle_interl = 360.
+    golden_a_interl = end_angle_interl * (3 - np.sqrt(5)) / 2  # ~111.246°
+
+    # DEFAULT: più starting points interlacciati
+    if theta_start_interl is None:
+        theta_start_interl = np.array([0., 10., 20.]) #starting point variabili se none
     theta_start_interl = np.array(theta_start_interl)
 
+    # calcola angoli interlacciati
     golden_angles_interl = np.mod(
         theta_start_interl[:, None] + np.arange(num_proj_interl) * golden_a_interl,
         end_angle_interl
     ).flatten()
     golden_angles_interl = np.unique(np.sort(golden_angles_interl))
 
+    # init scanner e caricamento volume
     scanner = XRayScanner(config_file)
     scanner.load_volume(volume_file, json_file)
 
+    #  scansione
     projections, dose_stats = scanner.tomography_scan(
         golden_angles_interl,
         "golden_tomo_interlaced_with_dose.h5",
         calculate_dose=False
     )
+
     return projections, dose_stats
 
 
@@ -341,9 +376,10 @@ def main():
         # example_parameter_study()
         # example_compare_geometries()
         # example_material_specific_dose()
-        example_golden_scan()
-        example_golden_scan_cumulative()
-        example_golden_scan_ordered()
+
+        #example_golden_scan()
+        #example_golden_scan_cumulative()
+        #example_golden_scan_ordered()
         example_golden_scan_interl()
 
         print("\n" + "=" * 60)

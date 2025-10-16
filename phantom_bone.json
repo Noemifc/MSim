@@ -1,0 +1,71 @@
+{
+  "voxel_size": [
+    0.5,
+    0.5,
+    0.5
+  ],
+  "lookup": {
+    "0": {
+      "composition": {},
+      "density": 0.0
+    },
+    "1": {
+      "composition": {
+        "H": 10,
+        "C": 5,
+        "N": 1,
+        "O": 4
+      },
+      "density": 1.06
+    },
+    "2": {
+      "composition": {
+        "Ca": 10,
+        "P": 6,
+        "O": 26,
+        "H": 2
+      },
+      "density": 1.92
+    },
+    "3": {
+      "composition": {
+        "H": 11,
+        "C": 6,
+        "N": 0.1,
+        "O": 1
+      },
+      "density": 0.98
+    },
+    "4": {
+      "composition": {
+        "Ca": 1,
+        "C": 1,
+        "O": 3
+      },
+      "density": 2.71
+    },
+    "5": {
+      "composition": {
+        "Ca": 8,
+        "P": 5,
+        "O": 22,
+        "H": 2
+      },
+      "density": 1.18
+    },
+    "6": {
+      "composition": {
+        "Ti": 1
+      },
+      "density": 4.51
+    },
+    "7": {
+      "composition": {
+        "I": 1,
+        "H": 2,
+        "O": 1
+      },
+      "density": 1.5
+    }
+  }
+}
