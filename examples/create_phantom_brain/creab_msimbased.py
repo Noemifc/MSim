@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Generate brain phantom in Zarr format for X-ray simulation with dose calculation.
-Outputs multiscale Zarr and JSON with voxel_size, lookup, and regions.
+Outputs multiscale Zarr and JSON with voxel_size, lookup, and regions
 """
 
 import numpy as np
@@ -12,7 +12,7 @@ import z5py
 import tifffile
 
 # ------------------------
-# ZARR SAVE FUNCTION
+# ZARR 
 # ------------------------
 def save_multiscale_zarr(
     data,
@@ -69,7 +69,7 @@ def save_multiscale_zarr(
         logger.info(f"Saved Neuroglancer-ready multiscale Zarr → {out_dir}")
 
 # ------------------------
-# JSON METADATA FUNCTION
+# JSON 
 # ------------------------
 def create_metadata_json(lookup_dict, voxel_size, output_path):
     """
@@ -89,7 +89,7 @@ def create_metadata_json(lookup_dict, voxel_size, output_path):
         json.dump(metadata, f, indent=2)
 
 # ------------------------
-# PHANTOM GENERATION
+# PHANTOM 
 # ------------------------
 def generate_brain_phantom(tiff_file="BCI.tif", json_file="brain_integrated.json"):
     """
@@ -113,11 +113,11 @@ def generate_brain_phantom(tiff_file="BCI.tif", json_file="brain_integrated.json
     # Codes for Zarr attribute
     codes = {k: k for k in mapping.keys()}
 
-    # Output paths
+    # Outputs
     zarr_path = "phantom_b.zarr"
     json_path = "phantom_b.json"
 
-    # Save
+    
     save_multiscale_zarr(volume, codes, zarr_path, voxel_size=(2.0, 2.0, 2.0))
     create_metadata_json(lookup, voxel_size=(2.0, 2.0, 2.0), output_path=json_path)
 
@@ -129,7 +129,7 @@ def generate_brain_phantom(tiff_file="BCI.tif", json_file="brain_integrated.json
 
     return zarr_path, json_path
 
-#
+
 def create_brain_phantom(shape=(64, 128, 128), voxel_size=(2.0, 2.0, 2.0)):
     """
     Create a simplified brain phantom with labeled regions.
@@ -157,7 +157,7 @@ def create_brain_phantom(shape=(64, 128, 128), voxel_size=(2.0, 2.0, 2.0)):
         indexing='ij'
     )
 
-    # Define simple ellipsoids for each region (simplified approximation)
+    # simple ellipsoids 
     # 1. gyrus corticali
     mask1 = (zz**2 / (nz*0.4)**2 + yy**2 / (ny*0.45)**2 + xx**2 / (nx*0.45)**2) <= 1
     volume[mask1] = 1
@@ -180,7 +180,7 @@ def create_brain_phantom(shape=(64, 128, 128), voxel_size=(2.0, 2.0, 2.0)):
 
     return volume
 
-# In generate_phantom(), aggiungi il case "brain":
+# In generate_phantom() +  case "brain":
 elif phantom_type == "brain":
     volume = create_brain_phantom(shape, voxel_size)
     codes = {
@@ -200,7 +200,7 @@ elif phantom_type == "brain":
         "5": {"name": "altro", "density": 1.06, "mu": 0.25}
     }
 
-# Poi salva Zarr + JSON come gli altri phantom:
+# save
 zarr_path = f"phantom_brain.zarr"
 json_path = f"phantom_brain.json"
 
@@ -246,3 +246,4 @@ projections, dose_stats = quick_tomography('{zarr_path}', '{json_path}', calcula
 
 dose_map, dose_stats = analyze_dose_only('{zarr_path}', '{json_path}')
 """)
+
