@@ -28,10 +28,10 @@ def create_enhanced_config():
     """Create configuration with photon statistics and dose parameters."""
     config = {
         "ENERGY_KEV": 23.0,
-        "DETECTOR_DIST": 0.3,
+        "DETECTOR_DIST": 0.0,
         "DETECTOR_PIXEL_SIZE": 0.5e-6,  # 0.5 micron detector pixels
         "PAD": 50,
-        "ENABLE_PHASE": True,
+        "ENABLE_PHASE": False,
         "ENABLE_ABSORPTION": True,
         "ENABLE_SCATTER": True,
 
@@ -57,7 +57,7 @@ def example_basic_scan():
     # Quick tomography (default settings)
     projections, _ = quick_tomography(
         "phantom_b.zarr",
-        "phantom_b.json",
+        "brain _elements.json",
         n_projections=90,
         output_file="basic_tomo.h5"
     )
@@ -71,7 +71,7 @@ def example_dose_analysis():
 
     dose_map, dose_stats = analyze_dose_only(
         "phantom_b.zarr",
-        "phantom_b.json",
+        "brain _elements.json",
         "enhanced_config.json"
     )
 
@@ -84,7 +84,7 @@ def example_full_scan_with_dose():
     print("\n=== FULL SCAN WITH DOSE ===")
 
     scanner = XRayScanner("enhanced_config.json")
-    scanner.load_volume("phantom_b.zarr", "phantom_b.json")
+    scanner.load_volume("phantom_b.zarr", "brain_elements.json")
 
     # Tomography with dose
     angles_tomo = np.linspace(0, 180, 360,
@@ -118,7 +118,7 @@ def example_parameter_study():
 
         # Run scan
         scanner = XRayScanner(config_file)
-        scanner.load_volume("phantom_b.zarr", "phantom_b.json")
+        scanner.load_volume("phantom_b.zarr", "brain_elements.json")
 
         projections, dose_stats = scanner.tomography_scan(
             np.linspace(0, 180, 36),  # Fewer angles for speed
@@ -134,7 +134,7 @@ def example_compare_geometries():
     print("\n=== GEOMETRY COMPARISON ===")
 
     scanner = XRayScanner("enhanced_config.json")
-    scanner.load_volume("phantom_b.zarr", "phantom_b.json")
+    scanner.load_volume("phantom_b.zarr", "brain_elements.json")
 
     angles = np.linspace(0, 180, 90)  # Same angles for fair comparison
 
@@ -159,7 +159,7 @@ def example_material_specific_dose():
 
     dose_map, dose_stats = analyze_dose_only(
         "phantom_b.zarr",
-        "phantom_b.json",
+        "brain_elements.json",
         "enhanced_config.json"
     )
 
@@ -188,7 +188,7 @@ def example_golden_scan(num_proj=36, theta_start=0):
     g_angles = np.mod(theta_start + np.arange(num_proj) * golden_a, 180)
 
     scanner = XRayScanner("enhanced_config.json")
-    scanner.load_volume("phantom_b.zarr", "phantom_b.json")
+    scanner.load_volume("phantom_b.zarr", "brain_elements.json")
 
     projections, dose_stats = scanner.tomography_scan(
         g_angles,
@@ -207,7 +207,7 @@ def example_golden_scan_cumulative(num_proj=36, theta_start=0):
     g_angles_cumulative = np.sort(g_angles)
 
     scanner = XRayScanner("enhanced_config.json")
-    scanner.load_volume("phantom_b.zarr", "phantom_b.json")
+    scanner.load_volume("phantom_b.zarr", "brain_elements.json")
 
     projections, dose_stats = scanner.tomography_scan(
         g_angles_cumulative,
@@ -230,7 +230,7 @@ def example_golden_scan_ordered(num_proj=36, theta_start=0):
     g_angles_sorted = np.sort(g_angles)
 
     scanner = XRayScanner("enhanced_config.json")
-    scanner.load_volume("phantom_b.zarr", "phantom_b.json")
+    scanner.load_volume("phantom_b.zarr", "brain_elements.json")
 
     projections, dose_stats = scanner.tomography_scan(
         g_angles_sorted,
@@ -248,7 +248,7 @@ def example_golden_scan_ordered(num_proj=36, theta_start=0):
 def example_golden_scan_interl(num_proj_interl=100, num_series=3, theta_start_interl=None,
                                config_file="enhanced_config.json",
                                volume_file="phantom_b.zarr",
-                               json_file="phantom_b.json"):
+                               json_file="brain_elements.json"):
     print("\n=== INTERLACED GOLDEN-ANGLE SCAN ===")
 
     end_angle_interl = 360.
@@ -268,7 +268,7 @@ def example_golden_scan_interl(num_proj_interl=100, num_series=3, theta_start_in
 def example_golden_scan_interl(num_proj_interl=100, theta_start_interl=None,
                                config_file="enhanced_config.json",
                                volume_file="phantom_b.zarr",
-                               json_file="phantom_b.json"):
+                               json_file="brain_elements.json"):
     print("\n=== INTERLACED GOLDEN-ANGLE SCAN ===")
 
     end_angle_interl = 360.
@@ -302,58 +302,6 @@ def example_golden_scan_interl(num_proj_interl=100, theta_start_interl=None,
 
     return projections, dose_stats
 
-
-#-------->VISUALIZZARE<-----------------------------------------------------------
-def open_all_h5():
-    """Open all .h5 files in the current working directory and print summary info."""
-    current_dir = os.getcwd()
-    print(f"\n🔍 Looking for .h5 files in: {current_dir}")
-
-    h5_files = glob.glob(os.path.join(current_dir, "*.h5"))
-    if not h5_files:
-        print("  No HDF5 files found in this directory.")
-        return
-
-    print("Trovati i seguenti file HDF5:", [os.path.basename(f) for f in h5_files])
-
-    for file in h5_files:
-        print(f"\n Opening {os.path.basename(file)} ...")
-        try:
-            with h5py.File(file, "r") as f:
-                print(" Datasets in file:")
-                def print_name(name, obj):
-                    if isinstance(obj, h5py.Dataset):
-                        print(f"  - {name}: shape={obj.shape}, dtype={obj.dtype}")
-                f.visititems(print_name)
-        except Exception as e:
-            print(f"❌ Error opening {file}: {e}")
-def open_all_h5_in_napari():
-    """Apri tutti i .h5 nella cartella corrente e carica i dataset in Napari."""
-    current_dir = os.getcwd()
-    print(f"\n🔍 Cercando .h5 in: {current_dir}")
-
-    h5_files = glob.glob(os.path.join(current_dir, "*.h5"))
-    if not h5_files:
-        print("  Nessun file HDF5 trovato.")
-        return
-
-    viewer = napari.Viewer()
-
-    for file in h5_files:
-        print(f"\n Aprendo {os.path.basename(file)} ...")
-        try:
-            with h5py.File(file, "r") as f:
-                for name, obj in f.items():
-                    if isinstance(obj, h5py.Dataset):
-                        print(f"  - Caricando dataset '{name}' shape={obj.shape}, dtype={obj.dtype}")
-                        data = obj[()]  # carica il dataset in memoria
-                        viewer.add_image(data, name=f"{os.path.basename(file)}::{name}")
-        except Exception as e:
-            print(f"❌ Errore aprendo {file}: {e}")
-
-    napari.run()
-
-#---------------------------------
 def main():
     """Run all examples."""
     print("ENHANCED X-RAY SIMULATION EXAMPLES")
@@ -395,10 +343,7 @@ def main():
         print("- compare_*.h5 (geometry comparison)")
         print("- enhanced_config.json (configuration)")
 
-        #  Mostra i file alla fine
-       # open_all_h5()
 
-       # open_all_h5_in_napari()
 
     except Exception as e:
         print(f"Error: {e}")

@@ -151,6 +151,115 @@ def example_material_specific_dose():
     max_volume_material = max(dose_stats.items(), key=lambda x: x[1]['total_volume_um3'])
     print(f"\nLargest volume material: {max_volume_material[1]['material_name']}")
     print(f"Volume: {max_volume_material[1]['total_volume_um3']:.1f} μm³")
+#------------------------
+
+
+##################################################################
+# GOLDEN ANGLE SCANS
+##################################################################
+
+def example_golden_scan(num_proj=36, theta_start=0,
+                        config_file="enhanced_config.json",
+                        volume_file="phantom_bone.zarr",
+                        json_file="phantom_bone.json"):
+    """Golden-angle tomography (angles modulo 180)."""
+    print("\n=== GOLDEN ANGLE SCAN ===")
+    golden_a = 180 * (3 - np.sqrt(5)) / 2
+    g_angles = np.mod(theta_start + np.arange(num_proj) * golden_a, 180)
+
+    scanner = XRayScanner(config_file)
+    scanner.load_volume(volume_file, json_file)
+
+    projections, dose_stats = scanner.tomography_scan(
+        g_angles,
+        "golden_tomo_with_dose.h5",
+        calculate_dose=True
+    )
+    return projections, dose_stats
+
+
+def example_golden_scan_cumulative(num_proj=36, theta_start=0,
+                                   config_file="enhanced_config.json",
+                                   volume_file="phantom_bone.zarr",
+                                   json_file="phantom_bone.json"):
+    """Golden angle scan with cumulative sorted angles."""
+    print("\n=== GOLDEN ANGLE CUMULATIVE SCAN ===")
+    golden_a = 180 * (3 - np.sqrt(5)) / 2
+    g_angles = np.mod(theta_start + np.arange(num_proj) * golden_a, 180)
+    g_angles_cumulative = np.sort(g_angles)
+
+    scanner = XRayScanner(config_file)
+    scanner.load_volume(volume_file, json_file)
+
+    projections, dose_stats = scanner.tomography_scan(
+        g_angles_cumulative,
+        "golden_tomo_with_dose_cumulative.h5",
+        calculate_dose=True
+    )
+    return projections, dose_stats
+
+
+def example_golden_scan_ordered(num_proj=36, theta_start=0,
+                                config_file="enhanced_config.json",
+                                volume_file="phantom_bone.zarr",
+                                json_file="phantom_bone.json"):
+    """Golden angle scan using ordered angles (progressive)."""
+    print("\n=== GOLDEN ANGLE ORDERED SCAN ===")
+    golden_ratio = (np.sqrt(5) - 1) / 2
+    g_angles = np.zeros(num_proj)
+    for i in range(num_proj):
+        g_angles[i] = (theta_start + 180 * golden_ratio * i) % 180
+    g_angles_sorted = np.sort(g_angles)
+
+    scanner = XRayScanner(config_file)
+    scanner.load_volume(volume_file, json_file)
+
+    projections, dose_stats = scanner.tomography_scan(
+        g_angles_sorted,
+        "golden_tomo_ordered.h5",
+        calculate_dose=True
+    )
+    return projections, dose_stats
+
+
+def example_golden_scan_interl(num_proj_interl=100, theta_start_interl=None,
+                               config_file="enhanced_config.json",
+                               volume_file="phantom_bone.zarr",
+                               json_file="phantom_bone.json"):
+    """Interlaced golden-angle tomography (multi-offset sampling)."""
+    print("\n=== INTERLACED GOLDEN-ANGLE SCAN ===")
+
+    end_angle_interl = 360.
+    golden_a_interl = end_angle_interl * (3 - np.sqrt(5)) / 2  # ~111.246°
+
+    if theta_start_interl is None:
+        theta_start_interl = np.array([0., 10., 20.])  # Default offsets
+    else:
+        theta_start_interl = np.array(theta_start_interl)
+
+    # Calculate interlaced angles and remove duplicates
+    golden_angles_interl = np.mod(
+        theta_start_interl[:, None] + np.arange(num_proj_interl) * golden_a_interl,
+        end_angle_interl
+    ).flatten()
+    golden_angles_interl = np.unique(np.sort(golden_angles_interl))
+    golden_angles_interl = np.mod(golden_angles_interl, 180)  # Keep in [0,180)
+
+    scanner = XRayScanner(config_file)
+    scanner.load_volume(volume_file, json_file)
+
+    projections, dose_stats = scanner.tomography_scan(
+        golden_angles_interl,
+        "golden_tomo_interlaced_with_dose.h5",
+        calculate_dose=True
+    )
+    return projections, dose_stats
+
+
+##################################################################
+# MAIN
+##################################################################
+
 
 def main():
     """Run all examples."""
@@ -171,12 +280,18 @@ def main():
             generate_phantom("bone", shape=(64, 96, 96), voxel_size=(0.5, 0.5, 0.5))
         
         # Run examples
-        #example_basic_scan()
+        example_basic_scan()
         #example_dose_analysis()
-        example_full_scan_with_dose()
+        #example_full_scan_with_dose()
         #example_parameter_study()
         #example_compare_geometries()
         #example_material_specific_dose()
+        # Run golden-angle examples
+        example_golden_scan()
+        example_golden_scan_cumulative()
+        example_golden_scan_ordered()
+        example_golden_scan_interl()
+
         
         print("\n" + "=" * 60)
         print("All examples completed successfully!")
@@ -186,6 +301,10 @@ def main():
         print("- tomo_photons_*.h5 (parameter study)")
         print("- compare_*.h5 (geometry comparison)")
         print("- enhanced_config.json (configuration)")
+        print("- golden_tomo_with_dose.h5")
+        print("- golden_tomo_with_dose_cumulative.h5")
+        print("- golden_tomo_ordered.h5")
+        print("- golden_tomo_interlaced_with_dose.h5")
         
     except Exception as e:
         print(f"Error: {e}")

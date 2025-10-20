@@ -286,6 +286,9 @@ def example_golden_scan_interl(num_proj_interl=100, theta_start_interl=None,
     ).flatten()
     golden_angles_interl = np.unique(np.sort(golden_angles_interl))
 
+    # rimuove duplicati
+    golden_angles_interl = np.unique(golden_angles_interl)
+
     # init scanner e caricamento volume
     scanner = XRayScanner(config_file)
     scanner.load_volume(volume_file, json_file)
@@ -370,7 +373,8 @@ def main():
             generate_phantom("bone", shape=(64, 96, 96), voxel_size=(0.5, 0.5, 0.5))
 
         # Run examples
-        # example_basic_scan()
+
+        example_basic_scan()
         # example_dose_analysis()
         # example_full_scan_with_dose()
         # example_parameter_study()
@@ -380,7 +384,7 @@ def main():
         #example_golden_scan()
         #example_golden_scan_cumulative()
         #example_golden_scan_ordered()
-        example_golden_scan_interl()
+        #example_golden_scan_interl()
 
         print("\n" + "=" * 60)
         print("All examples completed successfully!")
