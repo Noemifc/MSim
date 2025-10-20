@@ -5,6 +5,7 @@
 *.zarr
 *.tif
 *.tiff
+*.npy
 
 # Ignore logs
 *.log
@@ -13,7 +14,7 @@ logs/
 
 # Ignore Jupyter/IPython artifacts
 .ipynb_checkpoints/
-
+.idea/
 
 # Ignore Python cache
 __pycache__/
