@@ -21,8 +21,8 @@ voxel_size = metadata["voxel_size"]
 lookup = metadata["lookup"]
 
 # --- CREA UNA MAPPA DEI VALORI ---
-# Scegli se usare 'density' o 'mu'
-use_field = 'density'  # cambia in 'mu' se vuoi
+
+use_field = 'ID'  # cambia
 mapping = {int(k): float(v[use_field]) for k, v in lookup.items()}
 
 # --- CREA L'ARRAY NORMALIZZATO ---
@@ -48,3 +48,4 @@ z.attrs["lookup"] = lookup
 z.attrs["mapped_field"] = use_field
 
 print("Conversione completata! Zarr salvato in:", zarr_file)
+
